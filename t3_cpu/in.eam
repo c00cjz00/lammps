@@ -1,0 +1,31 @@
+# bulk Cu lattice
+# package gpu 16 
+
+variable	xx equal 20
+variable	yy equal 20
+variable	zz equal 20
+
+units		metal
+atom_style	atomic
+
+lattice		fcc 3.615
+region		box block 0 ${xx} 0 ${yy} 0 ${zz}
+create_box	1 box
+create_atoms	1 box
+
+pair_style	eam
+pair_coeff	1 1 ./Cu_u3.eam
+
+velocity	all create 300.0 376847 loop geom
+
+neighbor	1.0 bin
+neigh_modify    every 1 delay 5 check yes
+
+variable  ee equal "E_pair/natom"
+print "time v_ee"
+fix		1 all nvt temp 300 300 1 
+
+timestep	0.001
+thermo		100
+
+run		10000
